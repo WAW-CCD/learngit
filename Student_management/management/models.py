@@ -32,3 +32,8 @@ class Score(models.Model):
     S_student = models.ForeignKey(Student, on_delete=models.CASCADE) #学生
     S_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)   #课程
     score = models.FloatField(null = True)                          #成绩
+
+class Admin(models.Model):
+    A_number = models.IntegerField(primary_key=True) #工号
+    A_name = models.CharField(max_length=10)         #姓名
+    A_pass = models.CharField(max_length=33)         #密码

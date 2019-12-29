@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from management.models import Student, Teacher,Lesson,Score
+from management.models import Student, Teacher,Lesson,Score,Admin
 from django.shortcuts import render
 from django.http import HttpResponseRedirect,HttpResponse,StreamingHttpResponse
 import xlrd
@@ -66,7 +66,7 @@ def upload(request):
         elif typ == 5:
             add_score(os.path.join("./upload", myFile.name))
         os.remove(os.path.join("./upload", myFile.name))
-        return HttpResponse("upload over!")
+        return HttpResponse("<script >alert('您已成功导入！')</script>")
 
 
 def test(request):
@@ -84,7 +84,7 @@ def index(request):
 def score_list(request):
     lesson_id = request.GET.get('lesson')
     lesson = Lesson.objects.filter(l_number = lesson_id).first()
-    score = Score.objects.filter(S_lesson = lesson).order_by("score")
+    score = Score.objects.filter(S_lesson = lesson).order_by("-score")
     write_xls(score)
     return render(request, "student_list.html", {"score": score, "lesson": lesson_id})
 
@@ -100,6 +100,7 @@ def change(request):
     return HttpResponseRedirect("/score_list?lesson="+str(lid))
 
 def add_student(file_path):
+    Student.objects.all().delete()
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -112,6 +113,7 @@ def add_student(file_path):
 
 
 def add_teacher(file_path):
+    Teacher.objects.all().delete()
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -133,6 +135,7 @@ def add_score(file_path):
         Score.objects.filter(S_lesson = Lesson.objects.get(l_number = x[1]), S_student = Student.objects.get(s_number = x[0])).update(score = x[2])
 
 def add_lesson(file_path):
+    Lesson.objects.all().delete()
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -144,6 +147,7 @@ def add_lesson(file_path):
 
 
 def add_xuanke(file_path):
+    Score.objects.all().delete()
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -184,4 +188,70 @@ def login(request):
         else:
             return HttpResponseRedirect("/")
     else:
-        return  HttpResponseRedirect("/admin/")
+        try:
+            A = Admin.objects.get(A_number=name)
+        except Admin.DoesNotExist:
+            return HttpResponseRedirect("/")
+        if A.A_pass == ps:
+
+            return render(request, "Admin.html")
+        else:
+            return HttpResponseRedirect("/")
+
+
+def chaxun(request):
+    if request.method == "POST":
+        type = request.POST.get("leixing")
+        name = request.POST.get("name", None)
+        if type == "2":
+            try:
+                s = Student.objects.get(s_name=name)
+            except Student.DoesNotExist:
+                return HttpResponseRedirect("/")
+            return render(request, "search.html", {"student": s})
+        if type == "1":
+            try:
+                t = Teacher.objects.get(t_name=name)
+            except Teacher.DoesNotExist:
+                return HttpResponseRedirect("/")
+            return render(request, "search_tearcher.html", {"teacher": t})
+def update(request):
+    if request.method == "POST":
+        type = request.POST.get("leixing_update")
+        name = request.POST.get("name", None)
+        id = request.POST.get("id", None)
+        pwd = request.POST.get("password", None)
+        if type == "1":
+            try:
+                t = Teacher.objects.get(t_number=id)
+            except Teacher.DoesNotExist:
+                return HttpResponseRedirect("/")
+            t.t_pass=pwd
+            t.save()
+            return HttpResponse("<script >alert('您已成功修改！')</script>")
+        if type == "2":
+            try:
+                s = Student.objects.get(s_number=id)
+            except Student.DoesNotExist:
+                return HttpResponseRedirect("/")
+            s.s_pass=pwd
+            s.save()
+            return HttpResponse("<script >alert('您已成功修改！')</script>")
+def delete(request):
+    if request.method == "POST":
+        type = request.POST.get("leixing_delete")
+        id = request.POST.get("id", None)
+        if type == "1":
+            try:
+                t = Teacher.objects.get(t_number = id)
+            except Teacher.DoesNotExist:
+                return HttpResponseRedirect("/")
+            t.detele()
+            return HttpResponse("<script >alert('您已成功删除！')</script>")
+        if type == "2":
+            try:
+                s = Student.objects.get(s_number = id)
+            except Student.DoesNotExist:
+                return HttpResponseRedirect("/")
+            s.delete()
+            return HttpResponse("<script >alert('您已成功删除！')</script>")

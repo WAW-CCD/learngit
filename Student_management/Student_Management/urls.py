@@ -25,5 +25,8 @@ urlpatterns = [
     url(r'upload_file',views.upload),
     url(r'download',views.download),
     url(r'score_list', views.score_list),
-    url(r'test', views.test)
+    url(r'test', views.test),
+    url(r'admin1', views.chaxun),
+    url(r'admin2', views.update),
+    url(r'admin3', views.delete)
 ]

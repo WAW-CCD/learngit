@@ -1,0 +1,210 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>管理员</title>-->
+<!--    <style type="text/css">-->
+<!--        .column{-->
+<!--            margin: 0 auto;-->
+<!--            margin-top: 80px;-->
+<!--            margin-left: 700px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="column">-->
+
+<!--    <div class="ui pointing secondary menu">-->
+<!--    <form>-->
+<!--        <p>-->
+<!--            <input type="button" onclick="" class="" onclick="" value="用户查询"/>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <input type="button" onclick="" class="" onclick="" value="信息修改"/>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <input type="button" onclick="" class="" onclick="" value="信息删除"/>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <input type="button" onclick="" class="" onclick=""  value="导入文件"/>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <input type="button" onclick="" class="" onclick="" value="导出文件"/>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <input type="button" oonclick="" class="" onclick="" value="导出文件"/>-->
+<!--        </p>-->
+<!--        </form>-->
+
+<!--        </div>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>学生管理</title>
+    <link href="/static/css/semantic.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="ui three column grid">
+    <div class="column">
+    </div>
+    <div class="ui column">
+        <div class="ui pointing secondary menu">
+            <a class="item active" data-tab="first">用户查询</a>
+            <a class="item right" data-tab="second">信息修改</a>
+            <a class="item right" data-tab="third">信息删除</a>
+            <a class="item right" data-tab="fourth">文件管理</a>
+            <a class="item right" data-tab="fifth">数据库备份</a>
+
+        </div>
+
+        <div class="ui tab segment active" data-tab="first">
+            <form action="/admin1" method="post">
+            <p>
+            <div>
+            <label for="" name="leixing">选择查询类型:</label>
+            <select id="" name = "leixing">
+                <option value="1" name="teacher">教师</option>
+                <option value="2" name="student">学生</option>
+            </select>
+            </div>
+            </p>
+            请输入姓名<input class="name", name="name"><button class="ui submit button">点击查询</button>
+            </form>
+        </div>
+        <div class="ui tab segment " data-tab="second">
+            <form action="/admin2" method="post">
+            <div>
+            <p>
+            <label for="" name="leixing_update">选择修改类型:</label>
+            <select id="" name = "leixing_update">
+                <option value="1" name="teacher">教师</option>
+                <option value="2" name="student">学生</option>
+            </select>
+            </p>
+                <p>请输入姓名<input class="name", name="name"></p>
+                <p>请输入序号<input class="id", name="id"></p>
+                <p>请输入密码<input class="password", name="password"></p>
+                <button class="ui submit button">修改</button>
+            </div>
+            </form>
+        </div>
+        <div class="ui tab segment " data-tab="third">
+            <form action="/admin3" method="post">
+                <p>
+                    <label for="" name="leixing_delete">选择查询类型:</label>
+                    <select id="" name = "leixing_delete">
+                        <option value="1" name="teacher">教师</option>
+                        <option value="2" name="student">学生</option>
+                    </select>
+                </p>
+                <p>请输入序号<input class="id", name="id"></p>
+                <button class="ui submit button">删除</button>
+            </form>
+        </div>
+        <div class="ui tab segment " data-tab="fourth">
+            <p>学生信息导入</p>
+            <p>
+                <form id="form1" enctype="multipart/form-data" method="post" action="/upload_file?type=1">
+                <div class="row">
+                    <label for="myfile"></label>
+                           <input type="file" name="myfile" id="myfile" onchange="fileSelected();"/>
+                </div>
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+                <div class="row">
+                <input type="submit" value="Upload" />
+                </div>
+                <div id="progressNumber"></div>
+                </form>
+            </p>
+            <p><button>学生信息导出</button></p>
+            <hr/>
+            <p>教师信息导入</p>
+            <p>
+                <form id="form2" enctype="multipart/form-data" method="post" action="/upload_file?type=2">
+                <div class="row">
+                    <label for="myfile"></label>
+                           <input type="file" name="myfile" id="myfile" onchange="fileSelected();"/>
+                </div>
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+                <div class="row">
+                <input type="submit" value="Upload" />
+                </div>
+                <div id="progressNumber"></div>
+                </form>
+            </p>
+             <p>
+                <button>教师信息导出</button>
+            </p>
+            <hr/>
+
+            <p>课程信息导入</p>
+            <p>
+                <form id="form3" enctype="multipart/form-data" method="post" action="/upload_file?type=3">
+                <div class="row">
+                    <label for="myfile"></label>
+                           <input type="file" name="myfile" id="myfile" onchange="fileSelected();"/>
+                </div>
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+                <div class="row">
+                <input type="submit" value="Upload" />
+                </div>
+                <div id="progressNumber"></div>
+                </form>
+            </p>
+            <p>
+                <button>课程信息导出</button>
+            </p>
+            <hr/>
+
+            <p>选课信息导入</p>
+            <p>
+                <form id="form3" enctype="multipart/form-data" method="post" action="/upload_file?type=4">
+                <div class="row">
+                    <label for="myfile"></label>
+                           <input type="file" name="myfile" id="myfile" onchange="fileSelected();"/>
+                </div>
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+                <div class="row">
+                <input type="submit" value="Upload" />
+                </div>
+                <div id="progressNumber"></div>
+                </form>
+            </p>
+            <p>
+                <button>选课信息导出</button>
+            </p>
+        </div>
+        <div class="ui tab segment " data-tab="fifth">
+            <a href="/download?file=db.sqlite3"><button>数据库一键备份</button>
+        </div>
+
+    </div>
+    <div class="column">
+    </div>
+</div>
+
+<!--被个路径坑了。。。。 -->
+<script src="/static/js/jquery-1.11.2.min.js"></script>
+<script src="/static/js/semantic.min.js"></script>
+<script src="/static/js/login.js"></script>
+
+
+</body>
+</html>
+

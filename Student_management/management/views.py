@@ -43,6 +43,14 @@ def upload(request):
         os.remove(os.path.join("./upload", myFile.name))
         return HttpResponse("upload over!")
 
+
+def test(request):
+    add_teacher(os.path.join("./test", "teacher.xls"))
+    add_lesson(os.path.join("./test", "lesson.xls"))
+    add_xuanke(os.path.join("./test", "xuanke.xls"))
+    add_score(os.path.join("./test", "score.xls"))
+
+
 # Create your views here.
 def index(request):
     return render(request, "login.html")
@@ -63,7 +71,7 @@ def change(request):
     sscore = request.POST.get("score", None)
     Score.objects.filter(S_lesson = lesson, S_student = student).update(score=sscore)
     score = Score.objects.filter(S_lesson = lesson)
-    return render(request, "student_list.html", {"score": score})
+    return HttpResponseRedirect("/score_list?lesson="+str(lid))
 
 def add_student(file_path):
     data = xlrd.open_workbook(file_path)
@@ -75,6 +83,7 @@ def add_student(file_path):
         student_list_to_insert.append(Student(s_number = x[0], s_name=x[1], grade=x[2], subject=x[3], sex=x[4], s_pass=x[5]))
     Student.objects.bulk_create(student_list_to_insert)
     #return render(request, "login.html")
+
 
 def add_teacher(file_path):
     data = xlrd.open_workbook(file_path)
@@ -95,8 +104,7 @@ def add_score(file_path):
     l = (table.row_values(i) for i in range(1, nrows))
     student_list_to_insert = list()
     for x in l:
-        student_list_to_insert.append(Score(S_student = Student.objects.get(s_number = x[0]), S_lesson = Lesson.objects.get(l_number = x[1]), score = x[2]))
-    Score.objects.bulk_create(student_list_to_insert)
+        Score.objects.filter(S_lesson = Lesson.objects.get(l_number = x[1]), S_student = Student.objects.get(s_number = x[0])).update(score = x[2])
 
 def add_lesson(file_path):
     data = xlrd.open_workbook(file_path)

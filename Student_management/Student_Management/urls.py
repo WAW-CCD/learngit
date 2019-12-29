@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'login/$', views.login),
     url(r'upload_file',views.upload),
     url(r'download',views.download),
-    url(r'score_list', views.score_list)
+    url(r'score_list', views.score_list),
+    url(r'test', views.test)
 ]

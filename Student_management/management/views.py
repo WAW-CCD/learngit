@@ -9,7 +9,7 @@ from django.conf import settings
 
 def download(request):
     filename = request.GET.get('file')
-    filepath = os.path.join(settings.MEDIA_ROOT, filename)
+    filepath = os.path.join("./", filename)
     fp = open(filepath, 'rb')
     response = StreamingHttpResponse(fp)
     # response = FileResponse(fp)
@@ -23,20 +23,25 @@ def upload(request):
         myFile = request.FILES.get("myfile", None)  # 获取上传的文件，如果没有文件，则默认为None
         if not myFile:
             return HttpResponse("no files for upload!")
-        # destination=open(os.path.join('upload',myFile.name),'wb+')
         destination = open(
             os.path.join("./upload", myFile.name),
             'wb+')  # 打开特定的文件进行二进制的写操作
         for chunk in myFile.chunks():  # 分块写入文件
             destination.write(chunk)
         destination.close()
+        typ = int(request.GET.get('type'))
+        if typ == 1:
+            add_student(os.path.join("./upload", myFile.name))
+        elif typ == 2:
+            add_teacher(os.path.join("./upload", myFile.name))
+        elif typ == 3:
+            add_lesson(os.path.join("./upload", myFile.name))
+        elif typ == 4:
+            add_xuanke(os.path.join("./upload", myFile.name))
+        elif typ == 5:
+            add_score(os.path.join("./upload", myFile.name))
+        os.remove(os.path.join("./upload", myFile.name))
         return HttpResponse("upload over!")
-    else:
-        file_list = []
-        files = os.listdir('./')
-        for i in files:
-            file_list.append(i)
-        return render(request, 'upload.html', {'file_list': file_list})
 
 # Create your views here.
 def index(request):
@@ -60,8 +65,7 @@ def change(request):
     score = Score.objects.filter(S_lesson = lesson)
     return render(request, "student_list.html", {"score": score})
 
-def add_student(request):
-    file_path = "./upload/python名单.xls"
+def add_student(file_path):
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -72,8 +76,7 @@ def add_student(request):
     Student.objects.bulk_create(student_list_to_insert)
     #return render(request, "login.html")
 
-def add_teacher(request):
-    file_path = "./upload/teacher.xls"
+def add_teacher(file_path):
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -84,8 +87,18 @@ def add_teacher(request):
     Teacher.objects.bulk_create(teacher_list_to_insert)
     #return render(request, "login.html")
 
-def add_lesson(request):
-    file_path = "./upload/lesson.xls"
+
+def add_score(file_path):
+    data = xlrd.open_workbook(file_path)
+    table = data.sheets()[0]
+    nrows = table.nrows
+    l = (table.row_values(i) for i in range(1, nrows))
+    student_list_to_insert = list()
+    for x in l:
+        student_list_to_insert.append(Score(S_student = Student.objects.get(s_number = x[0]), S_lesson = Lesson.objects.get(l_number = x[1]), score = x[2]))
+    Score.objects.bulk_create(student_list_to_insert)
+
+def add_lesson(file_path):
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -94,10 +107,9 @@ def add_lesson(request):
     for x in l:
         list_to_insert.append(Lesson(l_number = x[0], l_name=x[1], credit=x[2], l_teacher=Teacher.objects.get(t_name=x[3]), time=x[4]))
     Lesson.objects.bulk_create(list_to_insert)
-    #return render(request, "login.html")
 
-def add_xuanke(request):
-    file_path = "./upload/xuanke.xls"
+
+def add_xuanke(file_path):
     data = xlrd.open_workbook(file_path)
     table = data.sheets()[0]
     nrows = table.nrows
@@ -109,13 +121,6 @@ def add_xuanke(request):
     #return render(request, "login.html")
 
 
-def testdb(request):
-    add_student(request)
-    add_teacher(request)
-    add_lesson(request)
-    add_xuanke(request)
-    return render(request, "login.html")
-
 def login(request):
     print (request.POST.get("sid", None))
     if request.method == "POST":
@@ -123,7 +128,6 @@ def login(request):
         name = request.POST.get("username", None)
         ps = request.POST.get("password", None)
 
-    print (type)
     if type == "1":
         try:
             s = Student.objects.get(s_number=name)

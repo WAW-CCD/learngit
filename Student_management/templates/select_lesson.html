@@ -53,20 +53,21 @@
                 </table>
 
         </div>
-        <div class="ui tab segment active" data-tab="third">
-            <form id="form1" enctype="multipart/form-data" method="post" action="">
+        <div class="ui tab segment" data-tab="third">
+            <form id="form1" enctype="multipart/form-data" method="post" action="/upload_file?type=5">
                 <div class="row">
-                    <label for="fileToUpload">请选择文件</label>
-                           <input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>
+                    <label for="myfile">导入学生成绩</label>
+                           <input type="file" name="myfile" id="myfile" onchange="fileSelected();"/>
                 </div>
                 <div id="fileName"></div>
                 <div id="fileSize"></div>
                 <div id="fileType"></div>
                 <div class="row">
-                <input type="button" onclick="uploadFile()" value="Upload" />
+                <input type="submit" value="Upload" />
                 </div>
                 <div id="progressNumber"></div>
             </form>
+            <a href="/download?file=test/score.xls"><input type="button" value="download"></a>
         </div>
         
 

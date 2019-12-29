@@ -2,20 +2,63 @@
 from __future__ import unicode_literals
 from management.models import Student, Teacher,Lesson,Score
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse,StreamingHttpResponse
 import xlrd
+import os
+from django.conf import settings
+
+def download(request):
+    filename = request.GET.get('file')
+    filepath = os.path.join(settings.MEDIA_ROOT, filename)
+    fp = open(filepath, 'rb')
+    response = StreamingHttpResponse(fp)
+    # response = FileResponse(fp)
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="%s"' % filename
+    return response
+    
+
+def upload(request):
+    if request.method == "POST":  # 请求方法为POST时，进行处理
+        myFile = request.FILES.get("myfile", None)  # 获取上传的文件，如果没有文件，则默认为None
+        if not myFile:
+            return HttpResponse("no files for upload!")
+        # destination=open(os.path.join('upload',myFile.name),'wb+')
+        destination = open(
+            os.path.join("./upload", myFile.name),
+            'wb+')  # 打开特定的文件进行二进制的写操作
+        for chunk in myFile.chunks():  # 分块写入文件
+            destination.write(chunk)
+        destination.close()
+        return HttpResponse("upload over!")
+    else:
+        file_list = []
+        files = os.listdir('./')
+        for i in files:
+            file_list.append(i)
+        return render(request, 'upload.html', {'file_list': file_list})
+
 # Create your views here.
 def index(request):
     return render(request, "login.html")
 
+
+def score_list(request):
+    lesson_id = request.GET.get('lesson')
+    lesson = Lesson.objects.filter(l_number = lesson_id).first()
+    score = Score.objects.filter(S_lesson = lesson)
+    return render(request, "student_list.html", {"score": score, "lesson": lesson_id})
+
+
 def change(request):
-        lid = int(request.GET['lid'])
-        sid = int(request.GET['sid'])
-        sscore = request.POST.get("score", None)
-        Score.objects.filter(id=sid).update(score=sscore)
-        score = Score.objects.filter(lNum=lid)
-        teacher = Teacher.objects.get(t_lesson_id=lid)
-        return render(request, "teacher.html", {"teacher": teacher, "score": score})
+    lid = int(request.GET['lid'])
+    sid = int(request.GET['sid'])
+    lesson = Lesson.objects.filter(l_number = lid).first()
+    student = Student.objects.filter(s_number = sid).first()
+    sscore = request.POST.get("score", None)
+    Score.objects.filter(S_lesson = lesson, S_student = student).update(score=sscore)
+    score = Score.objects.filter(S_lesson = lesson)
+    return render(request, "student_list.html", {"score": score})
 
 def add_student(request):
     file_path = "./upload/python名单.xls"
@@ -99,8 +142,7 @@ def login(request):
             return HttpResponseRedirect("/")
         if t.t_pass == ps:
             lesson = Lesson.objects.filter(l_teacher = t)
-            score = Score.objects.filter(S_lesson=lesson)
-            return render(request, "teacher.html", {"teacher": t, "score": score})
+            return render(request, "select_lesson.html", {"teacher": t, "lesson": lesson})
         else:
             return HttpResponseRedirect("/")
     else:

@@ -1,0 +1,6 @@
+<form action="/modify" method="post" enctype="multipart/form-data" >
+{% csrf_token %}
+    <div class="img-btn" onclick="$(this).next().click();">编辑头像</div>
+    <input type="file" name="img" id="img" style="display: none;" onclick="changeHead(0);">
+    <input type="submit" value="保存">
+</form>

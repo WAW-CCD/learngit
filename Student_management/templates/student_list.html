@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>student_list</title>
+    <meta charset="utf-8">
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <table>
+                    
+                    <tr>
+                        <th><label id="la">学号</label></th>
+                        <th><label id="la">姓名</label></th>
+                        <th><label id="la">专业</label></th>
+                        <th><label id="la">年级</label></th>
+                        <th>课程</th>
+                        <th><label id="la">成绩</label></th>
+                    </tr>
+                    
+                    <tbody>
+                {% for s in score %}                
+				<tr>
+				<td>{{ s.S_student.s_number }}</td>
+					<td>{{ s.S_student.s_name }}</td>
+					<td>{{ s.S_student.subject }}</td>
+					<td>{{ s.S_student.grade }}</td>
+					<td>{{ s.S_lesson.l_name }}</td>
+					<td>{{ s.score }}</td>
+					<form method="POST" action="/change/?lid={{ lesson }}&sid={{ s.S_student.s_number }}">
+                            <td><input type="text" name="score" style="width:70px;"></td>
+                            <td>
+                                <input type="submit" style="float:right;" value="确定">
+                            </td>
+                    </form>
+				</tr>
+				{% endfor %}
+                    </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>教师信息</title>
+    <link href="/static/css/semantic.min.css" rel="stylesheet">
+    <style type="text/css">
+        #la {
+            font-family: "Microsoft YaHei UI";
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+<div class="ui three column grid">
+    <div class="column">
+    </div>
+    <div class="ui column">
+        <div class="ui pointing secondary menu">
+
+             <a class="item active" data-tab="first">教师信息</a>
+            <a class="item " data-tab="second">课程列表</a>
+            <a class="item " data-tab="third">成绩管理</a>
+
+        </div>
+        <div class="ui tab segment active" data-tab="first">
+            <p>工号 &#12288&#12288&#12288&#12288&#12288&#12288&#12288&#12288&#12288 {{ teacher.t_number }}</p>
+            <p>姓名&#8194&#12288&#12288&#12288&#12288&#12288&#12288&#12288&#12288&#12288 {{ teacher.t_name }}</p>
+        </div>
+        <div class="ui tab segment " data-tab="second">
+
+                <table class="ui celled table">
+                    <thead>
+                    <tr>
+                        <th><label id="la">课程代码</label></th>
+                        <th><label id="la">课程名称</label></th>
+                        <th><label id="la">绩点</label></th>
+                        <th><label id="la">学时</label></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                {% for l in lesson %}                
+				<tr>
+				<td>{{ l.l_number }}</td>
+					<td><a href = "score_list?lesson={{ l.l_number }}">{{ l.l_name }}</a></td>
+					<td>{{ l.credit }}</td>
+					<td>{{ l.time }}</td>
+				</tr>
+				{% endfor %}
+                    </tbody>
+                </table>
+
+        </div>
+        <div class="ui tab segment active" data-tab="third">
+            <form id="form1" enctype="multipart/form-data" method="post" action="">
+                <div class="row">
+                    <label for="fileToUpload">请选择文件</label>
+                           <input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>
+                </div>
+                <div id="fileName"></div>
+                <div id="fileSize"></div>
+                <div id="fileType"></div>
+                <div class="row">
+                <input type="button" onclick="uploadFile()" value="Upload" />
+                </div>
+                <div id="progressNumber"></div>
+            </form>
+        </div>
+        
+
+    </div>
+    <div class="column">
+    </div>
+</div>
+
+
+<script src="/static/js/jquery-1.11.2.min.js"></script>
+<script src="/static/js/semantic.min.js"></script>
+<script src="/static/js/login.js"></script>
+</body>
+</html>

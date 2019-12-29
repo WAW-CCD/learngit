@@ -16,10 +16,24 @@
             font-family: "Microsoft YaHei UI";
             font-weight: 400;
         }
+         .column{
+            margin: 0 auto;
+            margin-top: 80px;
+            margin-left: 500px;
+        }
     </style>
+         <script src="static/js/jparticles.js"></script>
+    <script src="static/js/particle.js"></script>
 </head>
 <body>
-
+<div id="demo" style="width:100%; position: absolute; height: 100%; z-index: -10;"></div>
+    <script>
+    new JParticles.particle('#demo', {
+    proximity: 90,
+    range: 100,
+    eventElem: null
+    });
+    </script>
 <div class="ui three column grid">
     <div class="column">
     </div>
@@ -53,7 +67,7 @@
                         </div>
                     </div>
             <div class="field">
-              <label id="la">账号</label>
+              <label id="la">用户名</label>
 
               <input name="username" type="text">
 

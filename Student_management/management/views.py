@@ -6,6 +6,31 @@ from django.http import HttpResponseRedirect,HttpResponse,StreamingHttpResponse
 import xlrd
 import os
 from django.conf import settings
+import xlwt
+
+def write_xls(score):
+    workbook = xlwt.Workbook(encoding = 'utf-8')
+    worksheet = workbook.add_sheet('Sheet1')
+    head = ['学号', '姓名', '专业', '年级', '课程', '成绩', '排名']
+    for i in range(len(head)):
+        worksheet.write(0, i, head[i])
+    l = []
+    t = 0
+    for s in score:
+        l.append(list())
+        l[t].append(s.S_student.s_number)
+        l[t].append(s.S_student.s_name)
+        l[t].append(s.S_student.subject)
+        l[t].append(s.S_student.grade)
+        l[t].append(s.S_lesson.l_name)
+        l[t].append(s.score)
+        l[t].append(t+1)
+        t+=1
+    for i in range(1, len(l)+1):
+        for j in range(len(l[i-1])):
+            worksheet.write(i, j, l[i-1][j])
+    workbook.save('formatting.xls')
+
 
 def download(request):
     filename = request.GET.get('file')
@@ -59,7 +84,8 @@ def index(request):
 def score_list(request):
     lesson_id = request.GET.get('lesson')
     lesson = Lesson.objects.filter(l_number = lesson_id).first()
-    score = Score.objects.filter(S_lesson = lesson)
+    score = Score.objects.filter(S_lesson = lesson).order_by("score")
+    write_xls(score)
     return render(request, "student_list.html", {"score": score, "lesson": lesson_id})
 
 

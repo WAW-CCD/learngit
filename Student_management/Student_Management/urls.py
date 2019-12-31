@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'test', views.test),
     url(r'admin1', views.chaxun),
     url(r'admin2', views.update),
-    url(r'admin3', views.delete)
+    url(r'admin3', views.delete),
+	url(r'score_down', views.write_xls)
 ]

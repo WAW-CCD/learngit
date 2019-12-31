@@ -8,28 +8,40 @@ import os
 from django.conf import settings
 import xlwt
 
-def write_xls(score):
+def write_xls(request):
+    t_id = request.GET.get('t_id')
+    teacher = Teacher.objects.get(t_number = t_id)
+    lesson = Lesson.objects.filter(l_teacher = teacher)
     workbook = xlwt.Workbook(encoding = 'utf-8')
     worksheet = workbook.add_sheet('Sheet1')
-    head = ['学号', '姓名', '专业', '年级', '课程', '成绩', '排名']
-    for i in range(len(head)):
-        worksheet.write(0, i, head[i])
-    l = []
-    t = 0
-    for s in score:
-        l.append(list())
-        l[t].append(s.S_student.s_number)
-        l[t].append(s.S_student.s_name)
-        l[t].append(s.S_student.subject)
-        l[t].append(s.S_student.grade)
-        l[t].append(s.S_lesson.l_name)
-        l[t].append(s.score)
-        l[t].append(t+1)
-        t+=1
-    for i in range(1, len(l)+1):
-        for j in range(len(l[i-1])):
-            worksheet.write(i, j, l[i-1][j])
-    workbook.save('formatting.xls')
+    cnt = 0
+    for les in lesson:
+        worksheet.write(cnt, 3, les.l_name)
+        cnt+=1
+        score = Score.objects.filter(S_lesson = les)
+        l = []
+        t = 0
+        for s in score:
+            l.append(list())
+            l[t].append(s.S_student.s_number)
+            l[t].append(s.S_student.s_name)
+            l[t].append(s.S_student.subject)
+            l[t].append(s.S_student.grade)
+            l[t].append(s.S_lesson.l_name)
+            l[t].append(s.score)
+            l[t].append(t+1)
+            t+=1
+        for i in range(0, len(l)):
+            for j in range(len(l[i])):
+                worksheet.write(i+cnt, j, l[i][j])
+        cnt+=len(l)+1
+    workbook.save('Score.xls')
+    filepath = os.path.join("./", "Score.xls")
+    fp = open(filepath, 'rb')
+    response = StreamingHttpResponse(fp)
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename=Score.xls'
+    return response
 
 
 def download(request):
@@ -85,7 +97,6 @@ def score_list(request):
     lesson_id = request.GET.get('lesson')
     lesson = Lesson.objects.filter(l_number = lesson_id).first()
     score = Score.objects.filter(S_lesson = lesson).order_by("-score")
-    write_xls(score)
     return render(request, "student_list.html", {"score": score, "lesson": lesson_id})
 
 
